@@ -27,7 +27,7 @@ app.use(morgan("dev"));
 app.use(cors());
 
 //routes middlewares
-// now '/api' is the root of the router 'authRoutes'
+// the router for auth. now '/api' is the root of the router 'authRoutes'
 app.use('/api', authRoutes);
 
 // listen to port 8000

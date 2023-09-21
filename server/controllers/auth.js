@@ -8,6 +8,7 @@ import {emailTemplate} from "../helpers/email.js";
 import { hashPassword, comparePassword } from '../helpers/auth.js';
 import User from "../models/user.js";
 import {nanoid} from "nanoid";
+import validator from "email-validator";
 
 export const welcome = (req, res) => {
     res.json({
@@ -16,14 +17,29 @@ export const welcome = (req, res) => {
 };
 
 /**
- *  send an email for activating the account
+ * send an email for activating the account. The email contains a 
+ * a clickable link with jwt for authenticating the email address
+ * only when this link is clicked, the registration completes
  */
 export const preRegister = async (req, res) => {
-    // generate a clickable link containing jwt for authenticating the email address
-    // only when this link is clicked, the registration completes
-    
+
     // the email and password from the request body
     const {email, password} = req.body;
+
+    // validate the email and the password
+    if (!validator.validate(email)) {
+        return res.json({error: "A valid email is required"});
+    }
+    if (!password) {
+        return res.json({error: "password is required"});
+    }
+    if (password.length < 6) {
+        return res.json({error: "password should be at least 6 characters"});
+    }
+
+    // check if the email has been registerd
+    const user  = await User.findOne({email});
+    if (user) { return res.json({error: "Email is taken"}); }
 
     // the token for user identification
     const token = jwt.sign({email, password}, config.JWT_SECRET, {
