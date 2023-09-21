@@ -52,7 +52,8 @@ const schema = new Schema({
     enquiredProperties: [{type: ObjectId, ref: "Ad"}],
     wishlist: [{type: ObjectId, ref: "Ad"}],
     
-     // the code generated for resetting the password
+     // the code generated for resetting the password. The token in the link for resetting the password
+     // will include the info about this reset code that can be decoded
     resetCode: {
         type: String,
         default: "",

@@ -56,21 +56,22 @@ export const preRegister = async (req, res) => {
         // send the email
         config.AWSSES.sendEmail(
         
-        // the helper function returns the first argument of the ::sendEmail() method
-        emailTemplate(email, content, config.REPLY_TO, "Activate your account"),
+            // the helper function returns the first argument of the ::sendEmail() method
+            emailTemplate(email, content, config.REPLY_TO, "Activate your account"),
 
-        // error handler
-        (err, data) => {
-            // console.log("REGION: " + config.apiVersion);
-            if (err) {
-               console.log(err);
-                return res.json({ok: false});
+            // error handler
+            (err, data) => {
+                if (err) {
+                   console.log(err);
+                    return res.json({ok: false});
+                }
+                else {
+                   console.log(data);
+                    return res.json({ok: true});
+                }
             }
-            else {
-               console.log(data);
-                return res.json({ok: true});
-            }
-    });}
+        );
+    }
     catch (err) {
         console.log(err);
         return res.json({error: "something went wrong"});
@@ -125,7 +126,7 @@ export const register = async (req, res) => {
 };
 
 /**
- * this function handles user login
+ * this function handles user login process
  */
 export const login = async (req, res) => {
     try {
@@ -160,6 +161,64 @@ export const login = async (req, res) => {
             user,
         })
 
+    } catch(err) {
+        console.log(err);
+        return res.json({error: "Something went wrong. Try again"});
+    }
+};
+
+/**
+ * this function handles the user password reset process in case that a user forgets password
+ * users can reset password by email address
+ */
+export const forgotPassword = async (req, res) => {
+    try {
+        // get the input email address
+        const {email} = req.body;
+
+        // try finding a user with the given email address in the request
+        const user = await User.findOne({email});
+
+        // if no existing users with the given email address
+        if (!user) {
+            return res.json({error: "Could not find a user with the this email"});
+        }
+        // if we find a user with the given email address
+        else {
+            // this reset code is for identifying the user in the password-resetting link
+            const resetCode = nanoid();
+
+            // store the resetcode in user property
+            user.resetCode = resetCode;
+
+            // the token for resetting the password
+            const token = jwt.sign({resetCode}, config.JWT_SECRET, {
+                expiresIn: "1h",
+            });
+
+            // the content of the email
+            const content = `
+                <p>Please click the link below to access your account:</p>
+                <a href="${config.CLIENT_URL}/auth/access-account/${token}">Access my account</a>
+            `
+            // send an email to the email in the request body
+            config.AWSSES.sendEmail(
+                // the options for sending the email
+                emailTemplate(email, content, config.REPLY_TO, "Access your account"), 
+
+                // handler for success and failure
+                (err, data) => {
+                    if (err) {
+                       console.log(err);
+                        return res.json({ok: false});
+                    }
+                    else {
+                       console.log(data);
+                        return res.json({ok: true});
+                    }
+                }
+            );
+        }
     } catch(err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});

@@ -13,13 +13,13 @@ const style = `
 /**
  * a function that returns options for AWSSES sendEmail method
  */
-export const emailTemplate = (email, content, replyTb, subject) => {
+export const emailTemplate = (email, content, replyTo, subject) => {
     return {
         Source: config.EMAIL_FROM,
-        // a hard-coded email address for developing
         Destination: {
             ToAddresses: [email],
         },
+        ReplyToAddresses: [replyTo],
         Message: {
             Body: {
                 Html: {
@@ -37,7 +37,7 @@ export const emailTemplate = (email, content, replyTb, subject) => {
             },
             Subject: {
                 Charset: "UTF-8",
-                Data: "Welcome to Realist",
+                Data: subject,
             }
         },
     };

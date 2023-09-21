@@ -14,5 +14,7 @@ router.post("/pre-register", auth.preRegister);
 router.post("/register", auth.register);
 // user login api
 router.post("/login", auth.login);
+// user forgets password
+router.post("/forgot-password", auth.forgotPassword);
 
 export default router;
