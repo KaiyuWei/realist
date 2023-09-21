@@ -159,8 +159,7 @@ export const login = async (req, res) => {
             token,
             refreshToken,
             user,
-        })
-
+        });
     } catch(err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
@@ -191,6 +190,9 @@ export const forgotPassword = async (req, res) => {
             // store the resetcode in user property
             user.resetCode = resetCode;
 
+            // save the user with the reset code
+            user.save();
+
             // the token for resetting the password
             const token = jwt.sign({resetCode}, config.JWT_SECRET, {
                 expiresIn: "1h",
@@ -213,13 +215,51 @@ export const forgotPassword = async (req, res) => {
                         return res.json({ok: false});
                     }
                     else {
-                       console.log(data);
+                        console.log(data);
                         return res.json({ok: true});
                     }
                 }
             );
         }
     } catch(err) {
+        console.log(err);
+        return res.json({error: "Something went wrong. Try again"});
+    }
+};
+
+/**
+* access the user account by a token for resettin the user password.
+*/
+export const accessAccount = async (req, res) => {
+    try {
+        // decode the token and get the resetCode
+        const {resetCode} = jwt.verify(req.body.resetCode, config.JWT_SECRET);
+
+        // find the user in the DB. If found, update this reset code to empty string
+        // so that this resetCode become invalid
+        const user = await User.findOneAndUpdate({resetCode}, {resetCode: ""});
+
+        // create jwt tokens
+        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "1h",
+        });
+        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+
+        // sent response
+        // do not send the password in the response, so we set them to 'undefined'
+        // just in the response (the real password is saved in the database already)
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        // return the data in json format
+        return res.json({
+            token,
+            refreshToken,
+            user,
+        });
+    } catch (err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
     }
