@@ -5,8 +5,17 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import mongoose from 'mongoose';
+import {DATABASE} from "./config.js";
 
 const app = express();
+
+// database
+mongoose.set("strictQuery", false);
+mongoose
+    .connect(DATABASE)
+    .then(() => console.log('db_connected'))
+    .catch((err) => console.log(err));
 
 // apply middlewares
 // for parsing incoming json payload from HTTP requests
