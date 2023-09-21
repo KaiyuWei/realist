@@ -51,7 +51,12 @@ const schema = new Schema({
     // this field refers to the "Ad" model objects.
     enquiredProperties: [{type: ObjectId, ref: "Ad"}],
     wishlist: [{type: ObjectId, ref: "Ad"}],
-    resetCode: "",  // the code generated for resetting the password
+    
+     // the code generated for resetting the password
+    resetCode: {
+        type: String,
+        default: "",
+    },
 },
 // need timestamps
 {timestamps: true}

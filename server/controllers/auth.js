@@ -5,6 +5,9 @@
 import * as config from '../config.js';
 import jwt from "jsonwebtoken";
 import {emailTemplate} from "../helpers/email.js";
+import { hashPassword, comparePassword } from '../helpers/auth.js';
+import User from "../models/user.js";
+import {nanoid} from "nanoid";
 
 export const welcome = (req, res) => {
     res.json({
@@ -60,7 +63,41 @@ export const register = async (req, res) => {
     try {
         // decode the jwt token with the jwt token
         const {email, password} = jwt.verify(req.body.token, config.JWT_SECRET);
-    } catch (err) {
 
+        // hash the password
+        const hashedPassword = await hashPassword(password);
+
+        // create a user and save it.
+        const user  = await new User({
+            username: nanoid(6),  // a random unique id with 6 characters
+            email,
+            password: hashedPassword,
+        }).save();
+
+        // use the auto-generated id from mongodb of the user to create a token
+        // this is used for immediate login after the registration
+        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "1h",
+        });
+
+        // the above token is only valid for 1 hour. This one keeps the user session for
+        // longer time.
+        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+
+        // do not send the password in the response, so we set them to 'undefined'
+        // just in the response (the real password is saved in the database already)
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        return res.json({
+            token,
+            refreshToken,
+            user,
+        })
+    } catch (err) {
+        console.log(err);
+        return res.json({error: "Something went wrong. Try again"});
     }
 }
