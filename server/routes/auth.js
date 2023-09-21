@@ -10,7 +10,9 @@ const router = express.Router();
 router.get("/", auth.welcome);
 // the middleware users before authenticating their email address
 router.post("/pre-register", auth.preRegister);
-// for destructure the email activation link and create a user.
+// for registration create a user in mongoDB.
 router.post("/register", auth.register);
+// user login api
+router.post("/login", auth.login);
 
 export default router;

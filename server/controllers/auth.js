@@ -52,8 +52,9 @@ export const preRegister = async (req, res) => {
         <a href="${config.CLIENT_URL}/auth/account-activate/${token}">Activate account</a>
     `;
 
-    // send the email
-    config.AWSSES.sendEmail(
+    try {
+        // send the email
+        config.AWSSES.sendEmail(
         
         // the helper function returns the first argument of the ::sendEmail() method
         emailTemplate(email, content, config.REPLY_TO, "Activate your account"),
@@ -69,7 +70,11 @@ export const preRegister = async (req, res) => {
                console.log(data);
                 return res.json({ok: true});
             }
-    });
+    });}
+    catch (err) {
+        console.log(err);
+        return res.json({error: "something went wrong"});
+    }
 };
 
 /**
@@ -107,6 +112,7 @@ export const register = async (req, res) => {
         user.password = undefined;
         user.resetCode = undefined;
 
+        // return the data in json format
         return res.json({
             token,
             refreshToken,
@@ -116,4 +122,46 @@ export const register = async (req, res) => {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
     }
-}
+};
+
+/**
+ * this function handles user login
+ */
+export const login = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        
+        // find the user by email
+        const user = await User.findOne({email});
+
+        // compare the password
+        const match = await comparePassword(password, user.password);
+        if (!match) {
+            return res.json({error: "wrong password"});
+        }
+        // create jwt tokens
+        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "1h",
+        });
+        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+
+        // sent response
+        // do not send the password in the response, so we set them to 'undefined'
+        // just in the response (the real password is saved in the database already)
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        // return the data in json format
+        return res.json({
+            token,
+            refreshToken,
+            user,
+        })
+
+    } catch(err) {
+        console.log(err);
+        return res.json({error: "Something went wrong. Try again"});
+    }
+};
