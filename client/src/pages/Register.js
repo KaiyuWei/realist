@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { API } from "../config.js";
+import toast from "react-hot-toast";
 
 export default function Register() {
   // the hooks for states
@@ -16,6 +17,11 @@ export default function Register() {
         email,
         password,
       });
+
+      // send the user a toast if there is any error
+      if (data?.error) {
+        toast.error(data.error);
+      }
       console.log(data);
     } catch (err) {
       console.log(err);

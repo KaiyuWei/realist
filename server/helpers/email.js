@@ -14,17 +14,17 @@ const style = `
  * a function that returns options for AWSSES sendEmail method
  */
 export const emailTemplate = (email, content, replyTo, subject) => {
-    return {
-        Source: config.EMAIL_FROM,
-        Destination: {
-            ToAddresses: [email],
-        },
-        ReplyToAddresses: [replyTo],
-        Message: {
-            Body: {
-                Html: {
-                    Charset: "UTF-8",
-                    Data:`
+  return {
+    Source: config.EMAIL_FROM,
+    Destination: {
+      ToAddresses: [email],
+    },
+    ReplyToAddresses: [replyTo],
+    Message: {
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          Data: `
                         <html>
                             <div style="${style}">
                             <h1>Welcome to Realist</h1>
@@ -33,12 +33,12 @@ export const emailTemplate = (email, content, replyTo, subject) => {
                             </div>
                         </html>
                     `,
-                },
-            },
-            Subject: {
-                Charset: "UTF-8",
-                Data: subject,
-            }
         },
-    };
+      },
+      Subject: {
+        Charset: "UTF-8",
+        Data: subject,
+      },
+    },
+  };
 };
