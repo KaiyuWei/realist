@@ -280,6 +280,29 @@ export const currentUser = async (req, res) => {
         res.json(user);
     } catch (err) {
         console.log(err);
-        res.status(401).json({error: "Invalid or expired token"});
+        return res.status(401).json({error: "Invalid or expired token"});
+    }
+};
+
+/**
+ * expose a user profile (no signin required)
+ */
+export const publicProfile = async (req, res) => {
+    try {
+        // find the user by the username
+        const user = await User.findOne({username: req.params.username});
+
+        // if the user not found
+        if (!user) throw new Error(`cannot find a user with username "${req.params.username}"`);
+
+        // do not disclose the confidential data
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        // return the user data
+        res.json(user);
+    } catch (err) {
+        console.log(err);
+        return res.status(404).json({error: "User not found"});
     }
 };

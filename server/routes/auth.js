@@ -23,5 +23,7 @@ router.post("/access-account", auth.accessAccount);
 router.get("/refresh-token", auth.refreshToken);
 // get the currently logged-in user
 router.get("/current-user", requireSignin, auth.currentUser);
+// get user profile (no signin required)
+router.get("/profile/:username", auth.publicProfile);
 
 export default router;
