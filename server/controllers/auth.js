@@ -1,5 +1,5 @@
 /**
- * controllers in auth middlewares
+ * controllers in auth process
  */
 
 import * as config from '../config.js';
@@ -22,37 +22,35 @@ export const welcome = (req, res) => {
  * only when this link is clicked, the registration completes
  */
 export const preRegister = async (req, res) => {
-
-    // the email and password from the request body
-    const {email, password} = req.body;
-
-    // validate the email and the password
-    if (!validator.validate(email)) {
-        return res.json({error: "A valid email is required"});
-    }
-    if (!password) {
-        return res.json({error: "password is required"});
-    }
-    if (password.length < 6) {
-        return res.json({error: "password should be at least 6 characters"});
-    }
-
-    // check if the email has been registerd
-    const user  = await User.findOne({email});
-    if (user) { return res.json({error: "Email is taken"}); }
-
-    // the token for user identification
-    const token = jwt.sign({email, password}, config.JWT_SECRET, {
-        expiresIn: "1h",
-    });
-
-    // the email body content
-    const content = `
-        <p>Click the link below to activate your account</p>
-        <a href="${config.CLIENT_URL}/auth/account-activate/${token}">Activate account</a>
-    `;
-
     try {
+        // the email and password from the request body
+        const {email, password} = req.body;
+
+        // validate the email and the password
+        if (!validator.validate(email)) {
+            return res.json({error: "A valid email is required"});
+        }
+        if (!password) {
+            return res.json({error: "password is required"});
+        }
+        if (password.length < 6) {
+            return res.json({error: "password should be at least 6 characters"});
+        }
+
+        // check if the email has been registerd
+        const user  = await User.findOne({email});
+        if (user) { return res.json({error: "Email is taken"}); }
+
+        // the token for user identification
+        const token = jwt.sign({email, password}, config.JWT_SECRET, {
+            expiresIn: "1h",
+        });
+
+        // the email body content
+        const content = `
+            <p>Click the link below to activate your account</p>
+            <a href="${config.CLIENT_URL}/auth/account-activate/${token}">Activate account</a>`;
+
         // send the email
         config.AWSSES.sendEmail(
         
@@ -83,6 +81,7 @@ export const preRegister = async (req, res) => {
  */
 export const register = async (req, res) => {
     try {
+        console.log(req.body);
         // decode the jwt token with the jwt token
         const {email, password} = jwt.verify(req.body.token, config.JWT_SECRET);
 
@@ -97,7 +96,7 @@ export const register = async (req, res) => {
         }).save();
 
         // use the auto-generated id from mongodb of the user to create a token
-        // this is used for immediate login after the registration
+        // this is used for immediate login after login
         const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
             expiresIn: "1h",
         });
@@ -134,6 +133,11 @@ export const login = async (req, res) => {
         
         // find the user by email
         const user = await User.findOne({email});
+
+        // if no existing users with the given email address
+        if (!user) {
+            return res.json({error: "Could not find a user with the this email"});
+        }
 
         // compare the password
         const match = await comparePassword(password, user.password);
@@ -262,5 +266,51 @@ export const accessAccount = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
+    }
+};
+
+/**
+ * require a new login token by the refresh token
+ */
+export const refreshToken = async (req, res) =>{
+    try {
+        // get the user id from the decoded token
+        const {_id} = jwt.verify(req.headers.refresh_token, config.JWT_SECRET);
+
+        // find the user in db
+        const user = await User.findById(_id);
+
+        // if no existing users with the given _id
+        if (!user) {
+            return res.json({error: "Could not find a user with the this id"});
+        }
+
+        // create jwt tokens
+        // token for login
+        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "1h",
+        });
+
+        // token for generating new login token
+        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+
+        // sent response
+        // do not send the password in the response, so we set them to 'undefined'
+        // just in the response (the real password is saved in the database already)
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        // return the data in json format
+        return res.json({
+            token,
+            refreshToken,
+            user,
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(403).json({error: "Something went wrong. Try again"});
     }
 };

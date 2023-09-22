@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt';
  * @return string tha hashed password
  */
 export const hashPassword = (password) => {
+    
     return new Promise((resolve, reject) => {
         bcrypt.genSalt(12, (err, salt) => {
             // handle the error
