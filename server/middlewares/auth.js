@@ -10,6 +10,7 @@ import {JWT_SECRET} from "../config.js";
  */
 export const requireSignin = (req, res, next) => {
     try {
+        console.log(req.headers);
         // decode the token in the request header
         const decoded = jwt.verify(req.headers.authorization, JWT_SECRET);
 
@@ -20,7 +21,6 @@ export const requireSignin = (req, res, next) => {
         next();
     } catch (err) {
         console.log(err);
-        res.status(401).json({error: "Invalid or expired token"})
+        res.status(401).json({error: "Invalid or expired token"});
     }
 };
-

@@ -21,5 +21,7 @@ router.post("/forgot-password", auth.forgotPassword);
 router.post("/access-account", auth.accessAccount);
 // if the login token expires, request a new login token by the refresh token
 router.get("/refresh-token", auth.refreshToken);
+// get the currently logged-in user
+router.get("/current-user", requireSignin, auth.currentUser);
 
 export default router;

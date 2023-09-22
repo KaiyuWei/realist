@@ -144,9 +144,7 @@ export const login = async (req, res) => {
         const user = await User.findOne({email});
 
         // if no existing users with the given email address
-        if (!user) {
-            return res.json({error: "Could not find a user with the this email"});
-        }
+        if (!user) throw new Error(`cannot find a user with email ${email}`);
 
         // compare the password
         const match = await comparePassword(password, user.password);
@@ -175,9 +173,8 @@ export const forgotPassword = async (req, res) => {
         const user = await User.findOne({email});
 
         // if no existing users with the given email address
-        if (!user) {
-            return res.json({error: "Could not find a user with the this email"});
-        }
+        if (!user) throw new Error(`cannot find a user with email ${email}`);
+
         // if we find a user with the given email address
         else {
             // this reset code is for identifying the user in the password-resetting link
@@ -255,14 +252,34 @@ export const refreshToken = async (req, res) =>{
         const user = await User.findById(_id);
 
         // if no existing users with the given _id
-        if (!user) {
-            return res.json({error: "Could not find a user with the this id"});
-        }
+        if (!user) throw new Error(`cannot find a user with id ${_id}`);
 
         // return the use data and updated login token
         return tokenAndUserResponse(req, res, user);
     } catch (err) {
         console.log(err);
         return res.status(403).json({error: "Something went wrong. Try again"});
+    }
+};
+
+/**
+ * get the current logged-in user
+ */
+export const currentUser = async (req, res) => {
+    try {
+        // find the user by id
+        const user = await User.findById(req.user._id);
+
+        if (!user) throw new Error(`cannot find a user with id ${user}`);
+
+        // do not disclose the confidential data
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        // return the user data
+        res.json(user);
+    } catch (err) {
+        console.log(err);
+        res.status(401).json({error: "Invalid or expired token"});
     }
 };
