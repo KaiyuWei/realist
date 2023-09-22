@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import { API } from "../config.js";
 
 export default function Register() {
   // the hooks for states
@@ -9,7 +11,12 @@ export default function Register() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      console.table([email, password]);
+      // make the post request to the pre-register endpoint
+      const { data } = await axios.post(`${API}/pre-register`, {
+        email,
+        password,
+      });
+      console.log(data);
     } catch (err) {
       console.log(err);
     }
