@@ -110,7 +110,6 @@ export const preRegister = async (req, res) => {
  */
 export const register = async (req, res) => {
     try {
-        console.log(req.body);
         // decode the jwt token with the jwt token
         const {email, password} = jwt.verify(req.body.token, config.JWT_SECRET);
 
@@ -327,9 +326,37 @@ export const updatePassword = async (req, res) => {
         const user = await User.findByIdAndUpdate(req.user._id, { password : newPassword});
 
         // indicate the success
-        res.json({ok: true});
+        return res.json({ok: true});
     } catch (err) {
         console.log(err);
-        return res.status(404).json({error: "User not found"});
+        return res.json({error: "something went wrong"});
+    }
+};
+
+/**
+ * update user profiles
+ */
+export const updateProfile = async (req, res) => {
+    try {
+        // find the user. "req.user" is added by the middleware "requireSignIn".
+        // data that we want to update is in the request body.
+        const user = await User.findByIdAndUpdate(req.user._id, req.body, {new: true});
+
+        // do not disclose the confidential data
+        user.password = undefined;
+        user.resetCode = undefined;
+
+        // return the user data
+        res.json(user);
+    } catch (err) {
+        console.log(err);
+        
+        // handle 'DuplicateKey' error
+        if (err.codeName == 'DuplicateKey') {
+            return res.json({error: "the username or email is taken"});
+        }
+        else{ 
+            res.status(40).json({error: "Invalid or expired token"});
+        }
     }
 };

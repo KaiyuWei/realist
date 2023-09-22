@@ -27,5 +27,7 @@ router.get("/current-user", requireSignin, auth.currentUser);
 router.get("/profile/:username", auth.publicProfile);
 // updating password 
 router.put("/update-password", requireSignin, auth.updatePassword);
+// updating user profiles
+router.put("/update-profile", requireSignin, auth.updateProfile);
 
 export default router;
