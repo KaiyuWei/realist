@@ -153,7 +153,7 @@ export const login = async (req, res) => {
     return tokenAndUserResponse(req, res, user);
   } catch (err) {
     console.log(err);
-    return res.json({ error: "Something went wrong. Try again" });
+    return res.json({ error: err.toString() });
   }
 };
 
@@ -201,7 +201,7 @@ export const forgotPassword = async (req, res) => {
         (err, data) => {
           if (err) {
             console.log(err);
-            return res.json({ ok: false });
+            return res.json({ error: err.toString() });
           } else {
             console.log(data);
             return res.json({ ok: true });
@@ -231,7 +231,7 @@ export const accessAccount = async (req, res) => {
     return tokenAndUserResponse(req, res, user);
   } catch (err) {
     console.log(err);
-    return res.json({ error: "Something went wrong. Try again" });
+    return res.json({ error: err.toString() });
   }
 };
 
@@ -253,7 +253,7 @@ export const refreshToken = async (req, res) => {
     return tokenAndUserResponse(req, res, user);
   } catch (err) {
     console.log(err);
-    return res.status(403).json({ error: "Something went wrong. Try again" });
+    return res.status(403).json({ error: err.toString() });
   }
 };
 
@@ -275,7 +275,7 @@ export const currentUser = async (req, res) => {
     res.json(user);
   } catch (err) {
     console.log(err);
-    return res.status(401).json({ error: "Invalid or expired token" });
+    return res.status(401).json({ error: err.toString() });
   }
 };
 
@@ -301,7 +301,7 @@ export const publicProfile = async (req, res) => {
     res.json(user);
   } catch (err) {
     console.log(err);
-    return res.status(404).json({ error: "User not found" });
+    return res.status(404).json({ error: err.toString() });
   }
 };
 

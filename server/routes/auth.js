@@ -25,7 +25,7 @@ router.get("/refresh-token", auth.refreshToken);
 router.get("/current-user", requireSignin, auth.currentUser);
 // get user profile (no signin required)
 router.get("/profile/:username", auth.publicProfile);
-// updating password 
+// updating password
 router.put("/update-password", requireSignin, auth.updatePassword);
 // updating user profiles
 router.put("/update-profile", requireSignin, auth.updateProfile);
