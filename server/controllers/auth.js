@@ -10,16 +10,10 @@ import User from "../models/user.js";
 import {nanoid} from "nanoid";
 import validator from "email-validator";
 
-export const welcome = (req, res) => {
-    res.json({
-        data: 'hello from nodejs api from routes',
-    })
-};
-
 /**
  * a helper function for updating the login token and the refresh token
  */
-const tokenAndUserResponse = (user) => {
+const tokenAndUserResponse = (req, res, user) => {
     // create jwt tokens
     // token for login
     const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
@@ -43,6 +37,12 @@ const tokenAndUserResponse = (user) => {
         refreshToken,
         user,
     });
+};
+
+export const welcome = (req, res) => {
+    res.json({
+        data: 'hello from nodejs api from routes',
+    })
 };
 
 /**
@@ -124,29 +124,9 @@ export const register = async (req, res) => {
             password: hashedPassword,
         }).save();
 
-        // use the auto-generated id from mongodb of the user to create a token
-        // this is used for immediate login after login
-        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "1h",
-        });
+        // return the use data and updated login token
+        return tokenAndUserResponse(req, res, user);
 
-        // the above token is only valid for 1 hour. This one keeps the user session for
-        // longer time.
-        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "7d",
-        });
-
-        // do not send the password in the response, so we set them to 'undefined'
-        // just in the response (the real password is saved in the database already)
-        user.password = undefined;
-        user.resetCode = undefined;
-
-        // return the data in json format
-        return res.json({
-            token,
-            refreshToken,
-            user,
-        })
     } catch (err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
@@ -173,26 +153,9 @@ export const login = async (req, res) => {
         if (!match) {
             return res.json({error: "wrong password"});
         }
-        // create jwt tokens
-        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "1h",
-        });
-        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "7d",
-        });
-
-        // sent response
-        // do not send the password in the response, so we set them to 'undefined'
-        // just in the response (the real password is saved in the database already)
-        user.password = undefined;
-        user.resetCode = undefined;
-
-        // return the data in json format
-        return res.json({
-            token,
-            refreshToken,
-            user,
-        });
+        
+        // return the use data and updated login token
+        return tokenAndUserResponse(req, res, user);
     } catch(err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
@@ -272,26 +235,8 @@ export const accessAccount = async (req, res) => {
         // so that this resetCode become invalid
         const user = await User.findOneAndUpdate({resetCode}, {resetCode: ""});
 
-        // create jwt tokens
-        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "1h",
-        });
-        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "7d",
-        });
-
-        // sent response
-        // do not send the password in the response, so we set them to 'undefined'
-        // just in the response (the real password is saved in the database already)
-        user.password = undefined;
-        user.resetCode = undefined;
-
-        // return the data in json format
-        return res.json({
-            token,
-            refreshToken,
-            user,
-        });
+        // return the use data and updated login token
+        return tokenAndUserResponse(req, res, user);
     } catch (err) {
         console.log(err);
         return res.json({error: "Something went wrong. Try again"});
@@ -314,8 +259,8 @@ export const refreshToken = async (req, res) =>{
             return res.json({error: "Could not find a user with the this id"});
         }
 
-        
-
+        // return the use data and updated login token
+        return tokenAndUserResponse(req, res, user);
     } catch (err) {
         console.log(err);
         return res.status(403).json({error: "Something went wrong. Try again"});
