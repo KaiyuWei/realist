@@ -17,6 +17,35 @@ export const welcome = (req, res) => {
 };
 
 /**
+ * a helper function for updating the login token and the refresh token
+ */
+const tokenAndUserResponse = (user) => {
+    // create jwt tokens
+    // token for login
+    const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+        expiresIn: "1h",
+    });
+
+    // token for generating new login token
+    const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
+        expiresIn: "7d",
+    });
+
+    // sent response
+    // do not send the password in the response, so we set them to 'undefined'
+    // just in the response (the real password is saved in the database already)
+    user.password = undefined;
+    user.resetCode = undefined;
+
+    // return the data in json format
+    return res.json({
+        token,
+        refreshToken,
+        user,
+    });
+};
+
+/**
  * send an email for activating the account. The email contains a 
  * a clickable link with jwt for authenticating the email address
  * only when this link is clicked, the registration completes
@@ -285,29 +314,7 @@ export const refreshToken = async (req, res) =>{
             return res.json({error: "Could not find a user with the this id"});
         }
 
-        // create jwt tokens
-        // token for login
-        const token = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "1h",
-        });
-
-        // token for generating new login token
-        const refreshToken = jwt.sign({_id: user._id}, config.JWT_SECRET, {
-            expiresIn: "7d",
-        });
-
-        // sent response
-        // do not send the password in the response, so we set them to 'undefined'
-        // just in the response (the real password is saved in the database already)
-        user.password = undefined;
-        user.resetCode = undefined;
-
-        // return the data in json format
-        return res.json({
-            token,
-            refreshToken,
-            user,
-        });
+        
 
     } catch (err) {
         console.log(err);
