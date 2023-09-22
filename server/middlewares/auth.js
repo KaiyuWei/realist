@@ -10,7 +10,6 @@ import {JWT_SECRET} from "../config.js";
  */
 export const requireSignin = (req, res, next) => {
     try {
-        console.log(req.headers);
         // decode the token in the request header
         const decoded = jwt.verify(req.headers.authorization, JWT_SECRET);
 

@@ -306,3 +306,30 @@ export const publicProfile = async (req, res) => {
         return res.status(404).json({error: "User not found"});
     }
 };
+
+/**
+ * udpate user password
+ */
+export const updatePassword = async (req, res) => {
+    try {
+        const {password} = req.body;
+
+        // if no password is sent by the request
+        if (!password) return res.json({error: "password is required"});
+
+        // is password is too short
+        if (password.length < 6) return res.json({error: "password should be of at least 6 characters"});
+
+        // hash the new password
+        const newPassword = await hashPassword(password);
+
+        // get the current user and update the password
+        const user = await User.findByIdAndUpdate(req.user._id, { password : newPassword});
+
+        // indicate the success
+        res.json({ok: true});
+    } catch (err) {
+        console.log(err);
+        return res.status(404).json({error: "User not found"});
+    }
+};
