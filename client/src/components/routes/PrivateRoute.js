@@ -28,8 +28,10 @@ export default function PrivateRoute() {
           Authorization: auth?.token,
         },
       });
+      // there is a valid user
       setOk(true);
     } catch (err) {
+      // no valid user
       setOk(false);
       console.log(err);
     }
