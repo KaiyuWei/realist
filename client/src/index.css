@@ -1,4 +1,7 @@
 .active {
-    color: white;
-    background-color: #2196f3;
+  color: white;
+  background-color: #2196f3;
+}
+.pointer {
+  cursor: pointer;
 }

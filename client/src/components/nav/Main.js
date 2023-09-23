@@ -27,11 +27,24 @@ export default function Main() {
   const loggedIn =
     auth.user !== null && auth.token !== "" && auth.refreshToken !== "";
 
+  // conditionally navigate usder based on auth status
+  const handlePostAdClick = () => {
+    if (loggedIn) {
+      navigate("/ad/create");
+    } else {
+      navigate("login");
+    }
+  };
+
   return (
     <nav className="nav d-flex justify-content-between lead">
       <NavLink className="nav-link" aria-current="page" to="/">
         Home
       </NavLink>
+
+      <a className="nav-link pointer" onClick={handlePostAdClick}>
+        Post Ad
+      </a>
 
       {!loggedIn ? (
         <>
@@ -49,7 +62,10 @@ export default function Main() {
       {loggedIn ? (
         <div className="dropdown">
           <li>
-            <a className="nav-link dropdown-toggle" data-toggle="dropdown">
+            <a
+              className="nav-link dropdown-toggle pointer"
+              data-toggle="dropdown"
+            >
               {auth?.user?.name ? auth.user.name : auth.user.username}
             </a>
             <ul className="dropdown-menu">
@@ -59,7 +75,7 @@ export default function Main() {
                 </NavLink>
               </li>
               <li>
-                <a className="nav-link" onClick={logout}>
+                <a className="nav-link pointer" onClick={logout}>
                   Logout
                 </a>
               </li>

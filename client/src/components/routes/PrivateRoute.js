@@ -37,5 +37,6 @@ export default function PrivateRoute() {
     }
   };
 
+  // the outlet enables the nested UI rendering, which requires authentication.
   return ok ? <Outlet /> : "";
 }

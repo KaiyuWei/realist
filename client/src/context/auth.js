@@ -26,13 +26,55 @@ const AuthProvider = ({ children }) => {
     // check if the "auth" data is stored in the local storage
     let fromLS = localStorage.getItem("auth");
 
-    // update the local auth context if found in local storage
+    // update the local auth context if found in local storage and the auth state is still empty
     // this can happen when a window is refreshed and then we get auth data from the local storage
-    if (fromLS) setAuth(JSON.parse(fromLS));
+    if (fromLS && !auth?.user) setAuth(JSON.parse(fromLS));
   });
 
   // configure axios. set the base URL
   axios.defaults.baseURL = API;
+  axios.defaults.headers.common["Authorization"] = auth?.token;
+  axios.defaults.headers.common["refresh_token"] = auth?.refreshToken;
+
+  // handle the token expiry issue before it is passed to `catch`
+  axios.interceptors.response.use(
+    (res) => {
+      return res;
+    },
+    async (err) => {
+      const originalConfig = err.config;
+
+      if (err.response) {
+        // token is expired
+        if (err.response.status === 401 && !originalConfig._retry) {
+          originalConfig._retry = true;
+
+          try {
+            const { data } = await axios.get("/refresh-token");
+            axios.defaults.headers.common["token"] = data.token;
+            axios.defaults.headers.common["refresh_token"] = data.refreshToken;
+
+            setAuth(data);
+            localStorage.setItem("auth", JSON.stringify(data));
+
+            return axios(originalConfig);
+          } catch (_error) {
+            if (_error.response && _error.response.data) {
+              return Promise.reject(_error.response.data);
+            }
+
+            return Promise.reject(_error);
+          }
+        }
+
+        if (err.response.status === 403 && err.response.data) {
+          return Promise.reject(err.response.data);
+        }
+      }
+
+      return Promise.reject(err);
+    }
+  );
 
   // provide the auth context all the children components
   return (
