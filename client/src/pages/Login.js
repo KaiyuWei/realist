@@ -1,9 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
-import { API } from "../config.js";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.js";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   // context
@@ -87,6 +87,9 @@ export default function Login() {
                 {loading ? "Waiting..." : "Login"}
               </button>
             </form>
+            <Link className="text-danger" to="/auth/forgot-password">
+              forgot password
+            </Link>
           </div>
         </div>
       </div>

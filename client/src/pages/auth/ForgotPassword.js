@@ -2,11 +2,11 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function Register() {
+export default function ForgotPassword() {
   // the hooks for states
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   // the state indicating the loading status
   const [loading, setLoading] = useState(false);
   // navigation hook
@@ -21,20 +21,20 @@ export default function Register() {
       setLoading(true);
 
       // make the post request to the pre-register endpoint
-      const { data } = await axios.post(`/pre-register`, {
+      const { data } = await axios.post(`/forgot-password`, {
         email,
-        password,
       });
 
       // we've got the data. the loading process is terminated now
       setLoading(false);
 
       if (data?.error) {
+        console.log(data.error);
         // send the user an error toast if there is any error
         toast.error(data.error);
       } else {
         // send the success notification
-        toast.success("Please check your email to activate your account!");
+        toast.success("Please check you email to reset your password");
         // navigate to home page
         navigate("/");
       }
@@ -48,7 +48,7 @@ export default function Register() {
 
   return (
     <div>
-      <h1 className="display-1 bg-primary text-light p-5">Register</h1>
+      <h1 className="display-1 bg-primary text-light p-5">Forgot password</h1>
 
       <div className="container">
         <div className="row">
@@ -63,22 +63,16 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <input
-                type="password"
-                placeholder="Enter your email"
-                className="form-control mb-4"
-                required
-                autoFocus
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
               <button
                 disabled={loading}
                 className="btn btn-primary col-12 mb-4"
               >
-                {loading ? "Waiting..." : "Register"}
+                {loading ? "Waiting..." : "Submit"}
               </button>
             </form>
+            <Link className="text-danger" to="/login">
+              Back to login
+            </Link>
           </div>
         </div>
       </div>

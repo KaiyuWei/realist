@@ -32,6 +32,7 @@ export default function Main() {
       <NavLink className="nav-link" aria-current="page" to="/">
         Home
       </NavLink>
+
       {!loggedIn ? (
         <>
           <NavLink className="nav-link" to="/login">
