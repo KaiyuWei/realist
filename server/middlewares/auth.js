@@ -1,5 +1,6 @@
 /**
- * middlewares in auth process
+ * middlewares in auth process. checks the login token and adds the decoded user
+ * date in the req data.
  */
 
 import jwt from "jsonwebtoken";

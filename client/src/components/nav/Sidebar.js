@@ -13,7 +13,7 @@ export default function Sidebar() {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="ad/create">
+        <NavLink className="nav-link" to="/ad/create">
           Create Ad
         </NavLink>
       </li>
