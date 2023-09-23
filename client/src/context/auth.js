@@ -21,6 +21,7 @@ const AuthProvider = ({ children }) => {
     refreshToken: "",
   });
 
+  // this makes the app stays in logged-in state
   useEffect(() => {
     // check if the "auth" data is stored in the local storage
     let fromLS = localStorage.getItem("auth");
