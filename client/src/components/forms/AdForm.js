@@ -5,6 +5,7 @@
 import { useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { GOOGLE_PLACES_KEY } from "../../config.js";
+import CurrencyInput from "react-currency-input-field";
 
 export default function AdForm({ action, type }) {
   // state
@@ -22,6 +23,7 @@ export default function AdForm({ action, type }) {
     description: "",
     loading: false,
   });
+
   return (
     <>
       <div className="mb-3 form-control">
@@ -31,10 +33,19 @@ export default function AdForm({ action, type }) {
           selectProps={{
             defaultInputValue: ad?.address,
             placeholder: "Search for address...",
-            onChange: (data) => console.log(data),
+            onChange: ({ value }) => {
+              setAd({ ...ad, address: value.description });
+            },
           }}
         />
       </div>
+      <CurrencyInput
+        placeholder="Enter price"
+        defaultValue={ad.price}
+        className="form-control mb-3"
+        onValueChange={(value) => setAd({ ...ad, price: value })}
+      />
+      <pre>{JSON.stringify(ad, null, 4)}</pre>
     </>
   );
 }
