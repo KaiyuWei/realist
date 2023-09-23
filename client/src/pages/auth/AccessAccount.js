@@ -1,6 +1,8 @@
 /**
- * this file sends a post request to 'api/register/' with user
- * data for registering a user and store the user in the database
+ * users can get access to their account by a link in the email in case
+ * they forget their passwords
+ * this component sends a post request with the token retrieved from the link
+ * to the '/api/access-account' endpoint
  */
 
 import { useEffect } from "react";
@@ -9,7 +11,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useAuth } from "../../context/auth.js";
 
-export default function AccountActivate() {
+export default function AccessAccount() {
   // we need the global auth context
   const { auth, setAuth } = useAuth();
 
@@ -22,13 +24,15 @@ export default function AccountActivate() {
   // send the token to the backend after on rendering
   useEffect(() => {
     // call the function that sends the token
-    if (token) requestActivation();
+    if (token) requestAccess();
   }, [token]);
 
-  const requestActivation = async () => {
+  const requestAccess = async () => {
     try {
       // get the response from the server
-      const { data } = await axios.post(`/register`, { token });
+      const { data } = await axios.post(`/access-account`, {
+        resetCode: token,
+      });
 
       // if error received
       if (data?.error) {
@@ -39,7 +43,7 @@ export default function AccountActivate() {
         // set the global auth data
         setAuth(data);
         // send a success toast
-        toast.success("Registration success! Welcome to Realist!");
+        toast.success("Please update your password in profile page");
         // navigate to a new page
         navigate("/");
       }
