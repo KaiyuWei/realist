@@ -2,7 +2,7 @@
  * the file for react Context used for auth process
  */
 
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import axios from "axios";
 import { API } from "../config.js";
 
@@ -19,6 +19,15 @@ const AuthProvider = ({ children }) => {
     user: null,
     token: "",
     refreshToken: "",
+  });
+
+  useEffect(() => {
+    // check if the "auth" data is stored in the local storage
+    let fromLS = localStorage.getItem("auth");
+
+    // update the local auth context if found in local storage
+    // this can happen when a window is refreshed and then we get auth data from the local storage
+    if (fromLS) setAuth(JSON.parse(fromLS));
   });
 
   // configure axios. set the base URL

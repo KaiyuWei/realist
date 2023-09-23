@@ -29,7 +29,9 @@ export default function AccountActivate() {
       if (data?.error) {
         toast.error(data.error);
       } else {
-        // set the global auth data (the token)
+        // save the data in local storage (save in json format)
+        localStorage.setItem("auth", JSON.stringify(data));
+        // set the global auth data
         setAuth(data);
         // send a success toast
         toast.success("Registration success! Welcome to Realist!");
