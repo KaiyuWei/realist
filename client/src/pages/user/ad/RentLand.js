@@ -6,9 +6,9 @@ export default function RentLand() {
     <div>
       <h1 className="display-1 bg-primary text-light p-5">Rent Land</h1>
       <Sidebar />
-      <dif className="container mt-2">
+      <div className="container mt-2">
         <AdForm action="Rent" type="Land" />
-      </dif>
+      </div>
     </div>
   );
 }

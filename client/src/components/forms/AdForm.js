@@ -3,6 +3,8 @@
  */
 
 import { useState } from "react";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { GOOGLE_PLACES_KEY } from "../../config.js";
 
 export default function AdForm({ action, type }) {
   // state
@@ -22,8 +24,17 @@ export default function AdForm({ action, type }) {
   });
   return (
     <>
-      <p>This is ad create form</p>
-      {action} / {type}
+      <div className="mb-3 form-control">
+        <GooglePlacesAutocomplete
+          apiKey={GOOGLE_PLACES_KEY}
+          apiOptions="nl"
+          selectProps={{
+            defaultInputValue: ad?.address,
+            placeholder: "Search for address...",
+            onChange: (data) => console.log(data),
+          }}
+        />
+      </div>
     </>
   );
 }
