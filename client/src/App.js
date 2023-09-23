@@ -10,6 +10,7 @@ import Login from "./pages/Login.js";
 import Register from "./pages/Register.js";
 import AccountActivate from "./pages/auth/AccountActivate.js";
 import AccessAccount from "./pages/auth/AccessAccount.js";
+import Dashboard from "./pages/user/Dashboard.js";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             path="/auth/access-account/:token"
             element={<AccessAccount />}
           />
+          <Route path="/dashboard" element={<Dashboard />}></Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
