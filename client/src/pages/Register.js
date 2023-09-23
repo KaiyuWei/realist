@@ -16,6 +16,7 @@ export default function Register() {
   // submission handler
   const handleSubmit = async (e) => {
     try {
+      // prevent from auto-reloading ( the default action of submission)
       e.preventDefault();
       // the loading process starts. set the loading state to tru
       setLoading(true);
@@ -25,8 +26,6 @@ export default function Register() {
         email,
         password,
       });
-
-      console.log(data);
 
       // we've got the data. the loading process is terminated now
       setLoading(false);

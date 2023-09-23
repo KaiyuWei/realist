@@ -6,11 +6,10 @@ import { useState, createContext, useContext } from "react";
 import axios from "axios";
 import { API } from "../config.js";
 
-// a glocal context
+// a global context
 const AuthContext = createContext();
 
 /**
- *
  * @param array an array of React components that we provide the context for
  * @returns
  */
@@ -27,7 +26,7 @@ const AuthProvider = ({ children }) => {
 
   // provide the auth context all the children components
   return (
-    <AuthContext.Provider value={[auth, setAuth]}>
+    <AuthContext.Provider value={{ auth, setAuth }}>
       {children}
     </AuthContext.Provider>
   );
