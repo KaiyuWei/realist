@@ -8,7 +8,8 @@ import { nanoid } from "nanoid";
 
 export const uploadImage = async (req, res) => {
   try {
-    // console.log(req.body);
+    // get the image data
+    const { image } = req.body;
     // remove the prefix metadata from the image
     // then encode the image to text format by base64
     const base64Image = new Buffer.from(
@@ -22,7 +23,7 @@ export const uploadImage = async (req, res) => {
     // image params for uploading to AWS S3
     const params = {
       Bucket: "realist-kaiyu",
-      Key: `${nanoid}.${type}`,
+      Key: `${nanoid()}.${type}`,
       Body: base64Image,
       ACL: "public-read",
       ContentEncoding: "base64",
@@ -35,7 +36,6 @@ export const uploadImage = async (req, res) => {
         console.log(err);
         res.sendStatus(400);
       } else {
-        console.log(data);
         res.send(data);
       }
     });
