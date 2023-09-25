@@ -8,5 +8,8 @@
 
 .hoverable:hover {
   transform: scale(1.01);
-  box-shadow: 0.4rem 0.4rem 1rem rgba(0, 0, 0.15) !important;
+  /* box-shadow: 0.4rem 0.4rem 1rem rgba(0, 0, 0.5) !important; */
+  transition: 0.15s;
+  transition-timing-function: ease-in-out;
+  box-shadow: 12px 0px 64px rgba(0, 0, 0, 0.2) !important;
 }
