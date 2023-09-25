@@ -7,6 +7,12 @@ import { TbBath } from "react-icons/tb";
 import { BiArea } from "react-icons/bi";
 
 export default function AdCard({ ad }) {
+  /**
+   * this function formats the price string displayed in the webpage
+   */
+  function formatNumber(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
   return (
     <div className="col-lg-4 p-4 gx-4 gy-4">
       <div className="card hoverable shadow">
