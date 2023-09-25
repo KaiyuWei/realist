@@ -11,17 +11,17 @@ const schema = new Schema(
     address: { type: String, maxLength: 255, required: true },
     bedrooms: Number,
     bathrooms: Number,
-    landsize: Number,
+    landsize: String,
     carpark: Number,
     location: {
       type: {
         type: String,
-        enum: ["point"],
+        enum: ["Point"],
         default: "Point",
       },
       coordinates: {
         type: [Number],
-        default: [52.370216, 4.895168], // Amsterdam Latitude and longitude
+        default: [4.9041389, 52.3675734], // Amsterdam Latitude and longitude
       },
     },
     title: {

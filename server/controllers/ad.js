@@ -97,9 +97,40 @@ export const create = async (req, res) => {
     }
 
     // get the latitude and the longitude of the location
+    // the result is an array
     const geo = await config.GOOGLE_GEOCODER.geocode(address);
 
-    console.log(geo);
+    // create a new ad and save it in mongoDB
+    const ad = await new Ad({
+      ...req.body,
+      postedBy: req.user._id,
+      location: {
+        type: "Point",
+        coordinates: [geo?.[0].longitude, geo?.[0].latitude],
+      },
+      googleMap: geo,
+    }).save();
+
+    // a user becomes a seller when they posts an ad
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        // add "Seller" into the array of role if its not there yet by mongoDB update operator "$addToSet"
+        $addToSet: { role: "Seller" },
+      },
+      // the document will be sent back after the above update
+      { new: true }
+    );
+
+    // cover the sensitive data
+    user.password = undefined;
+    user.resetCode = undefined;
+
+    // response
+    res.json({
+      ad,
+      user,
+    });
   } catch (err) {
     console.log(err);
     res.json({ error: "something went wrong, try again" });
