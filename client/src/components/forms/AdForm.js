@@ -126,10 +126,13 @@ export default function AdForm({ action, type }) {
         value={ad.description}
         onChange={(e) => setAd({ ...ad, description: e.target.value })}
       />
-      <button onClick={handleClick} className="btn btn-primary">
-        Submit
+      <button
+        onClick={handleClick}
+        className={`btn btn-primary mb-5 ${ad.loading ? "disabled" : ""}`}
+      >
+        {ad.loading ? "Saving..." : "Submit"}
       </button>
-      <pre>{JSON.stringify(ad, null, 4)}</pre>
+      {/* <pre>{JSON.stringify(ad, null, 4)}</pre> */}
     </>
   );
 }
