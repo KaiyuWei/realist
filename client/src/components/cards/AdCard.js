@@ -22,9 +22,8 @@ export default function AdCard({ ad }) {
           style={{ height: "250px", objectFit: "cover" }}
         />
         <div className="card-body">
-          <div className="d-flex justify-content-between">
-            <h3>{ad?.price}</h3>
-          </div>
+          <h3>€{formatNumber(ad?.price)}</h3>
+          <p className="card-text">{ad?.address}</p>
           <p className="card-text d-flex justify-content-between">
             {ad?.bedrooms ? (
               <span>
