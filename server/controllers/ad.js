@@ -137,3 +137,21 @@ export const create = async (req, res) => {
     res.json({ error: "something went wrong, try again" });
   }
 };
+
+export const ads = async (req, res) => {
+  try {
+    const adsForSell = await Ad.find({ action: "Sell" })
+      .select("-googleMap -location -photos.Key -photos.key -photos.ETag")
+      .sort({ createdAt: -1 })
+      .limit(12); // only send 12 items in one response
+
+    const adsForRent = await Ad.find({ action: "Rent" })
+      .select("-googleMap -location -photo.Key -photo.key -photo.ETag")
+      .sort({ createdAt: -1 })
+      .limit(12);
+
+    res.json({ adsForSell, adsForRent });
+  } catch (err) {
+    console.log(err);
+  }
+};
