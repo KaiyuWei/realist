@@ -13,4 +13,6 @@ const router = express.Router();
  */
 router.post("/upload-image", requireSignin, ad.uploadImage);
 
+router.post("/remove-image", requireSignin, ad.removeImage);
+
 export default router;

@@ -55,9 +55,23 @@ export default function ImageUpload({ ad, setAd }) {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (file) => {
+    // a pop-up to confirm delete
+    const answer = window.confirm("Delete this image?");
+    if (!answer) return;
+    // set the loadiing status to true
+    setAd({ ...ad, uploading: true });
     try {
-      setAd({ ...ad, uploading: true });
+      // the request body might be ignored in a DELETE request, so we use POST request here.
+      const { data } = await axios.post("remove-image", file);
+      // if the image is deleted successfully
+      if (data?.ok)
+        setAd((prev) => ({
+          ...prev,
+          // filter out the photo that has been deleted
+          photos: prev.photos.filter((p) => p.Key !== file.Key),
+          uploading: false,
+        }));
     } catch (err) {
       setAd({ ...ad, uploading: false });
       console.log(err);
@@ -75,8 +89,14 @@ export default function ImageUpload({ ad, setAd }) {
           hidden
         />
       </label>
-      {ad?.photos.map((file) => (
-        <Avatar src={file?.Location} size="46" className="ml-2 mb-4" />
+      {ad?.photos.map((file, index) => (
+        <Avatar
+          key={index}
+          src={file?.Location}
+          size="46"
+          className="ml-2 mb-4"
+          onClick={() => handleDelete(file)}
+        />
       ))}
     </>
   );
