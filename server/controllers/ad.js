@@ -64,3 +64,15 @@ export const removeImage = async (req, res) => {
     console.log(err);
   }
 };
+
+/**
+ * create an ad
+ */
+export const create = async (req, res) => {
+  try {
+    console.log(req.body);
+  } catch (err) {
+    console.log(err);
+    res.json({ error: "something went wrong, try again" });
+  }
+};

@@ -7,6 +7,9 @@ import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { GOOGLE_PLACES_KEY } from "../../config.js";
 import CurrencyInput from "react-currency-input-field";
 import ImageUpload from "./ImageUpload.js";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function AdForm({ action, type }) {
   // state
@@ -19,11 +22,37 @@ export default function AdForm({ action, type }) {
     bathrooms: "",
     carpark: "",
     landsize: "",
-    type: "",
     title: "",
     description: "",
     loading: false,
+    type,
+    action,
   });
+
+  /**
+   * submitting handler for the ad-creation form
+   */
+  const handleClick = async () => {
+    try {
+      // start uploading
+      setAd({ ...ad, loading: true });
+      const { data } = await axios.post("/ad", ad);
+      console.log(data);
+      if (data?.error) {
+        // loading ends
+        setAd({ ...ad, loading: false });
+        toast.error(data.error);
+      } else {
+        // loading ends
+        setAd({ ...ad, loading: false });
+        toast.success("Ad created successfully!");
+      }
+    } catch (err) {
+      // loading ends
+      setAd({ ...ad, loading: false });
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -91,7 +120,9 @@ export default function AdForm({ action, type }) {
         value={ad.description}
         onChange={(e) => setAd({ ...ad, description: e.target.value })}
       />
-      <button className="btn btn-primary">Submit</button>
+      <button onClick={handleClick} className="btn btn-primary">
+        Submit
+      </button>
       <pre>{JSON.stringify(ad, null, 4)}</pre>
     </>
   );
