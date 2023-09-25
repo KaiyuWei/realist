@@ -5,6 +5,9 @@
 import * as config from "../config.js";
 import { Buffer } from "node:buffer";
 import { nanoid } from "nanoid";
+import slugify from "slugify";
+import Ad from "../models/ad.js";
+import User from "../models/user.js";
 
 export const uploadImage = async (req, res) => {
   try {
@@ -70,7 +73,33 @@ export const removeImage = async (req, res) => {
  */
 export const create = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
+    // destruct the data
+    const { photos, description, title, address, price, type, landsize } =
+      req.body;
+    // do checks about the data integrity
+    if (!photos?.length) {
+      return res.json({ error: "At least one photo is required" });
+    }
+    if (!description) {
+      return res.json({ error: "description is required" });
+    }
+    if (!address) {
+      return res.json({ error: "address is required" });
+    }
+    if (!price) {
+      return res.json({ error: "price is required" });
+    }
+    if (!type) {
+      return res.json({
+        error: "type is required. Is it a property or land?",
+      });
+    }
+
+    // get the latitude and the longitude of the location
+    const geo = await config.GOOGLE_GEOCODER.geocode(address);
+
+    console.log(geo);
   } catch (err) {
     console.log(err);
     res.json({ error: "something went wrong, try again" });

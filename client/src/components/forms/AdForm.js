@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function AdForm({ action, type }) {
+  // the navigator
+  const navigate = useNavigate();
   // state
   const [ad, setAd] = useState({
     photos: [],
@@ -46,6 +48,8 @@ export default function AdForm({ action, type }) {
         // loading ends
         setAd({ ...ad, loading: false });
         toast.success("Ad created successfully!");
+        // navigate to the dashboard
+        navigate("/dashboard");
       }
     } catch (err) {
       // loading ends
@@ -70,12 +74,14 @@ export default function AdForm({ action, type }) {
           }}
         />
       </div>
-      <CurrencyInput
-        placeholder="Enter price"
-        defaultValue={ad.price}
-        className="form-control mb-3"
-        onValueChange={(value) => setAd({ ...ad, price: value })}
-      />
+      <div style={{ marginTop: "80px" }}>
+        <CurrencyInput
+          placeholder="Enter price"
+          defaultValue={ad.price}
+          className="form-control mb-3"
+          onValueChange={(value) => setAd({ ...ad, price: value })}
+        />
+      </div>
       <input
         type="number"
         min="0"

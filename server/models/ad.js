@@ -37,6 +37,7 @@ const schema = new Schema(
     description: {},
     postedBy: { type: ObjectId, ref: "User" },
     sold: { type: Boolean, default: false },
+    // google map data from Google Geocoding API
     googleMap: {},
     // the type of this ad, for a house or for a land
     type: {
