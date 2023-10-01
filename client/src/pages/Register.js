@@ -65,7 +65,7 @@ export default function Register() {
               />
               <input
                 type="password"
-                placeholder="Enter your email"
+                placeholder="Enter your password"
                 className="form-control mb-4"
                 required
                 autoFocus
