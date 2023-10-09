@@ -30,4 +30,9 @@ router.put("/update-password", requireSignin, auth.updatePassword);
 // updating user profiles
 router.put("/update-profile", requireSignin, auth.updateProfile);
 
+// this is a test api
+router.get("/the-server-is-running", (req, res) => {
+  res.send("OK!");
+});
+
 export default router;
