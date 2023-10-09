@@ -65,9 +65,7 @@ export default function Main() {
             <a
               className="nav-link dropdown-toggle pointer"
               data-toggle="dropdown"
-            >
-              {auth?.user?.name ? auth.user.name : auth.user.username}
-            </a>
+            ></a>
             <ul className="dropdown-menu">
               <li>
                 <NavLink className="nav-link" to="/dashboard">
