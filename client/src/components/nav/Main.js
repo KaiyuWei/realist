@@ -66,7 +66,7 @@ export default function Main() {
               className="nav-link dropdown-toggle pointer"
               data-toggle="dropdown"
             ></a>
-            <ul className="dropdown-menu">
+            <ul className="dropdown-menu dropdown-menu-custom">
               <li>
                 <NavLink className="nav-link" to="/dashboard">
                   Dashboard
